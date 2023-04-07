@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS Serverless Quarkus HTTP - quarkus-lambda-rest-dynamodb-1.0.0-SNAPSHOT
+Globals:
+  Api:
+    EndpointConfiguration: REGIONAL
+    BinaryMediaTypes:
+      - "*/*"
+      
+Parameters:
+  Runtime:
+    Type: String
+    Default: provided
+    AllowedValues:
+    - java11
+    - provided
+    Description: use java11 for jvm runtime or provided for native runtime
+  MemorySize:
+    Type: String
+    Default: 128
+    Description: Memory size in MB
+  DisableSignalHandlers:
+    Type: String
+    Default: true
+    Description: Set to true when using native builds
+
+Resources:
+  FruitsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: QuarkusFruits
+      AttributeDefinitions:
+        - AttributeName: fruitName
+          AttributeType: S
+      KeySchema:
+        - AttributeName: fruitName
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  APIRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+            - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaExecute            
+      Policies:
+      - PolicyName: APIPolicy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+            - "dynamodb:PutItem"
+            - "dynamodb:UpdateItem"
+            - "dynamodb:DeleteItem"
+            - "dynamodb:GetItem"
+            - "dynamodb:Scan"
+            Resource: !GetAtt FruitsTable.Arn
+
+  QuarkusLambdaRestDynamodb:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
+      Runtime: !Sub ${Runtime}
+      CodeUri: ../target/function.zip
+      MemorySize: !Sub ${MemorySize}
+      Role: !GetAtt APIRole.Arn
+      Timeout: 15
+      Environment:
+        Variables:
+          DISABLE_SIGNAL_HANDLERS: !Sub ${DisableSignalHandlers}
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
+
+Outputs:
+  QuarkusLambdaRestDynamodbApi:
+    Description: URL for application
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/fruits'
+    Export:
+      Name: QuarkusLambdaRestDynamodbApi            
