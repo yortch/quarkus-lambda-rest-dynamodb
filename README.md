@@ -23,7 +23,7 @@ Builds, runs tests and starts application locally on `http://localhost:8080`
 Run build command:
 
 ```
-mvn clean install
+./mvnw clean install
 ```
 
 Run deploy command:
@@ -37,7 +37,7 @@ sam deploy -t iac/sam.yaml --config-env jvm
 Run build command:
 
 ```
-mvn clean install -Dnative -DskipTests -Dquarkus.native.container-build=true
+./mvnw clean install -Dnative -DskipTests -Dquarkus.native.container-build=true
 ```
 
 Run deploy command:
@@ -46,6 +46,28 @@ Run deploy command:
 sam deploy -t iac/sam.yaml 
 ```
 
+## Troubleshooting native build errors
+
+* "Error: Classes that should be initialized at run time got initialized during image building"
+
+If the following error appears:
+
+```
+Error: Classes that should be initialized at run time got initialized during image building:
+ java.security.SecureRandom the class was requested to be initialized at run time (from command line with 'java.security.SecureRandom'). To see why java.security.SecureRandom got initialized use --trace-class-initialization=java.security.SecureRandom
+```
+
+Then re-run the build with the following command:
+
+```
+./mvnw clean install -Dnative -DskipTests -Dquarkus.native.container-build=true -Dquarkus.native.additional-build-args="--trace-object-instantiation=java.security.SecureRandom"
+```
+
+Solved by adding to pom.xml:
+
+```
+<quarkus.native.additional-build-args>--initialize-at-run-time=java.security.SecureRandom</quarkus.native.additional-build-args>      
+```
 
 ## Related Guides
 
