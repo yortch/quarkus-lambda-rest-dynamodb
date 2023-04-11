@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Prerequisite infrastructure for Quarkus Lambda REST with DynamoDb demo
+
+Resources:
+
+  FruitsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: QuarkusFruits
+      AttributeDefinitions:
+        - AttributeName: fruitName
+          AttributeType: S
+      KeySchema:
+        - AttributeName: fruitName
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  APIRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: APIRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+            - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaExecute            
+      Policies:
+      - PolicyName: APIPolicy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+            - "dynamodb:PutItem"
+            - "dynamodb:UpdateItem"
+            - "dynamodb:DeleteItem"
+            - "dynamodb:GetItem"
+            - "dynamodb:Scan"
+            Resource: !GetAtt FruitsTable.Arn
+          

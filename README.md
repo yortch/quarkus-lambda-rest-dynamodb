@@ -18,29 +18,37 @@ Builds, runs tests and starts application locally on `http://localhost:8080`
 ./mvnw quarkus:dev
 ```
 
-## Build/deploy commands (JVM build)
+## Build commands (JVM build)
 
-Run build command:
+JVM Build command:
 
 ```
 ./mvnw clean install
 ```
 
-Run deploy command:
-
-```
-sam deploy -t iac/sam.yaml --config-env jvm
-```
-
-## Build/deploy commands (Native build)
-
-Run build command:
+Native Build command:
 
 ```
 ./mvnw clean install -Dnative -DskipTests -Dquarkus.native.container-build=true
 ```
 
-Run deploy command:
+## Deploy commands
+
+First deploy pre-requisites (i.e. DynamoDB and IAM Role) using this command:
+
+```
+sam deploy -t iac/sam-prereqs.yaml --config-env prereqs
+```
+
+Then run deploy command for corresponding build:
+
+* Deploy JVM Build command:
+
+```
+sam deploy -t iac/sam.yaml --config-env jvm
+```
+
+* Deploy Native Build command:
 
 ```
 sam deploy -t iac/sam.yaml 

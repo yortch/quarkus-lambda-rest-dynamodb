@@ -1,15 +1,23 @@
 version = 0.1
 
 [default.deploy.parameters]
-stack_name = "sam-app"
+stack_name = "sam-app-native"
 resolve_s3 = true
-s3_prefix = "sam-app"
+s3_prefix = "sam-app-native"
 region = "us-east-2"
 capabilities = "CAPABILITY_IAM"
 image_repositories = []
 
-[jvm.deploy.parameters]
-stack_name = "sam-app"
+[prereqs.deploy.parameters]
+stack_name = "sam-app-prereqs"
 resolve_s3 = true
+s3_prefix = "sam-app-prereqs"
+capabilities = "CAPABILITY_NAMED_IAM"
+
+
+[jvm.deploy.parameters]
+stack_name = "sam-app-jvm"
+resolve_s3 = true
+s3_prefix = "sam-app-jvm"
 capabilities = "CAPABILITY_IAM"
 parameter_overrides = "Runtime=\"java11\" MemorySize=\"512\" DisableSignalHandlers=\"false\""
