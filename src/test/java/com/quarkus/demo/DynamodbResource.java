@@ -30,6 +30,8 @@ public class DynamodbResource implements QuarkusTestResourceLifecycleManager {
 
     private final static String SECRET_KEY = "secretKey";
 
+    private final static String PORT = "8001";
+
     private DynamoDBProxyServer server;
 
     private DynamoDbClient client;
@@ -38,11 +40,10 @@ public class DynamodbResource implements QuarkusTestResourceLifecycleManager {
     public Map<String, String> start() {
         try {
             System.setProperty("sqlite4java.library.path", "target/native-libs");
-            String port = "8000";
-            server = ServerRunner.createServerFromCommandLineArgs(new String[] { "-inMemory", "-port", port });
+            server = ServerRunner.createServerFromCommandLineArgs(new String[] { "-inMemory", "-port", PORT });
             server.start();
 
-            String url = "http://localhost:" + port;
+            String url = "http://localhost:" + PORT;
             URI endpointOverride = URI.create(url);
 
             LOG.debug("Initializing Local DynamoDb at url: " + url);
