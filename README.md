@@ -18,6 +18,12 @@ First we need to create a local dynamodb instance and configure it as follows:
 docker run --rm --name local-dynamo -p 8000:4566 -e SERVICES=dynamodb -e START_WEB=0 -d localstack/localstack
 ```
 
+Alternatively, if docker is not available, DynamodbLocal can be downloaded from [here](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html#DynamoDBLocal.DownloadingAndRunning.title). Extract downloaded file and run the following command from extract directory:
+
+```
+java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -inMemory
+```
+
 Next configure profile for localstack:
 
 ```
@@ -30,7 +36,7 @@ Default region name [None]: us-east-1
 Next create the dynamodb table:
 
 ```
-aws dynamodb create-table --table-name QuarkusFruits \                               
+aws dynamodb create-table --table-name QuarkusFruits \
     --attribute-definitions AttributeName=fruitName,AttributeType=S \
     --key-schema AttributeName=fruitName,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
