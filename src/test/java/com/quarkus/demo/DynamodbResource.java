@@ -15,7 +15,11 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
+import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
 import software.amazon.awssdk.services.dynamodb.model.KeyType;
+import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput;
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 
 public class DynamodbResource implements QuarkusTestResourceLifecycleManager {
@@ -38,6 +42,7 @@ public class DynamodbResource implements QuarkusTestResourceLifecycleManager {
 
     @Override
     public Map<String, String> start() {
+        Map<String, String> properties = new HashMap<>();
         try {
             System.setProperty("sqlite4java.library.path", "target/native-libs");
             server = ServerRunner.createServerFromCommandLineArgs(new String[] { "-inMemory", "-port", PORT });
@@ -55,23 +60,34 @@ public class DynamodbResource implements QuarkusTestResourceLifecycleManager {
                     .httpClientBuilder(UrlConnectionHttpClient.builder())
                     .region(REGION).build();
 
-            client.createTable(tableRequest -> tableRequest.tableName(TABLE_NAME)
-                    .keySchema(keySchema -> keySchema.attributeName("fruitName").keyType(KeyType.HASH))
-                    .attributeDefinitions(
-                            attrDef -> attrDef.attributeName("fruitName").attributeType(ScalarAttributeType.S))
-                    .provisionedThroughput(throughput -> throughput.writeCapacityUnits(1L).readCapacityUnits(1L)));
+            String key = "fruitName";
+            client.createTable(CreateTableRequest.builder()
+                .attributeDefinitions(AttributeDefinition.builder()
+                    .attributeName(key)
+                    .attributeType(ScalarAttributeType.S)
+                    .build())
+                .keySchema(KeySchemaElement.builder()
+                    .attributeName(key)
+                    .keyType(KeyType.HASH)
+                    .build())
+                .provisionedThroughput(ProvisionedThroughput.builder()
+                    .readCapacityUnits(1L)
+                    .writeCapacityUnits(1L)
+                    .build())
+                .tableName(TABLE_NAME)
+                .build()
+            );
 
-            Map<String, String> properties = new HashMap<>();
             properties.put("quarkus.dynamodb.endpoint-override", endpointOverride.toString());
             properties.put("quarkus.dynamodb.aws.region", REGION.toString());
             properties.put("quarkus.dynamodb.aws.credentials.type", "static");
             properties.put("quarkus.dynamodb.aws.credentials.static-provider.access-key-id", ACCESS_KEY);
             properties.put("quarkus.dynamodb.aws.credentials.static-provider.secret-access-key", SECRET_KEY);
 
-            return properties;
         } catch (Exception e) {
             throw new RuntimeException("Could not start Dynamodb local", e);
         }
+        return properties;
     }
 
     @Override
