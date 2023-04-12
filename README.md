@@ -8,9 +8,34 @@ This project uses Quarkus to demo using Quarkus Lambda REST extension which expo
 - AWS CLI
 - maven or gradle (this guide uses mvn and can also use provided maven wrapper - `mvnw`)
 - jdk 11+
-- Docker (required for native build)
+- Docker (required for native build and running locally)
 
 ## Run locally
+
+First we need to create a local dynamodb instance and configure it as follows:
+
+```
+docker run --rm --name local-dynamo -p 8000:4566 -e SERVICES=dynamodb -e START_WEB=0 -d localstack/localstack
+```
+
+Next configure profile for localstack:
+
+```
+aws configure --profile localstack
+AWS Access Key ID [None]: test-key
+AWS Secret Access Key [None]: test-secret
+Default region name [None]: us-east-1
+```
+
+Next create the dynamodb table:
+
+```
+aws dynamodb create-table --table-name QuarkusFruits \                               
+    --attribute-definitions AttributeName=fruitName,AttributeType=S \
+    --key-schema AttributeName=fruitName,KeyType=HASH \
+    --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
+    --profile localstack --endpoint-url=http://localhost:8000
+```
 
 Builds, runs tests and starts application locally on `http://localhost:8080`
 
@@ -34,7 +59,9 @@ Native Build command:
 
 ## Deploy commands
 
-First deploy pre-requisites (i.e. DynamoDB and IAM Role) using this command:
+First log into your AWS account using `aws configure`
+
+Next deploy pre-requisites (i.e. DynamoDB and IAM Role) using this command:
 
 ```
 sam deploy -t iac/sam-prereqs.yaml --config-env prereqs
