@@ -1,6 +1,7 @@
 package com.quarkus.demo;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
@@ -12,6 +13,7 @@ public class Fruit {
     private String description;
 
     @DynamoDbPartitionKey
+    @DynamoDbAttribute("fruitName")
     public String getName() {
         return name;
     }

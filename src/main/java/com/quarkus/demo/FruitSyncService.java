@@ -35,4 +35,9 @@ public class FruitSyncService extends AbstractService {
         Key partitionKey = Key.builder().partitionValue(name).build();
         return fruitTable.getItem(partitionKey);
     }
+
+    public Fruit remove(String name) {
+        Key partitionKey = Key.builder().partitionValue(name).build();
+        return fruitTable.deleteItem(partitionKey);
+    }
 }
