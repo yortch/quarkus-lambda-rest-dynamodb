@@ -51,6 +51,11 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-jackson</artifactId>
     </dependency>
+    <!-- Need to include netty so that AmazonServicesClientsProcessor does fail with missingDependency error -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>netty-nio-client</artifactId>
+    </dependency>        
     <dependency>
       <groupId>io.quarkiverse.amazonservices</groupId>
       <artifactId>quarkus-amazon-dynamodb-enhanced</artifactId>
@@ -58,7 +63,7 @@
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>url-connection-client</artifactId>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
@@ -88,12 +93,13 @@
       <groupId>com.amazonaws</groupId>
       <artifactId>DynamoDBLocal</artifactId>
       <version>[1.12,2.0)</version>
+      <scope>test</scope>
       <exclusions>
         <exclusion> 
           <groupId>software.amazon.awssdk</groupId>
           <artifactId>apache-client</artifactId>
-        </exclusion>
-      </exclusions>     
+        </exclusion>     
+      </exclusions>
     </dependency>
   </dependencies>
   <build>
@@ -190,7 +196,6 @@
       <properties>
         <skipITs>false</skipITs>
         <quarkus.package.type>native</quarkus.package.type>
-        <quarkus.native.additional-build-args>--trace-object-instantiation=java.security.SecureRandom</quarkus.native.additional-build-args>      
       </properties>
     </profile>
   </profiles>
