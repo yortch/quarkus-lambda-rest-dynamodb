@@ -51,7 +51,7 @@ Builds, runs tests and starts application locally on `http://localhost:8080`
 
 ## Build commands (JVM build)
 
-JVM Build command:
+JVM/SnapStart Build command:
 
 ```
 ./mvnw clean install
@@ -79,6 +79,12 @@ Then run deploy command for corresponding build:
 
 ```
 sam deploy -t iac/sam.yaml --config-env jvm
+```
+
+* Deploy SnapStart command:
+
+```
+sam deploy -t iac/sam.yaml --config-env snapstart
 ```
 
 * Deploy Native Build command:

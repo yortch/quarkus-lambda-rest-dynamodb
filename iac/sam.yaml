@@ -26,6 +26,13 @@ Parameters:
     Type: String
     Default: true
     Description: Set to true when using native builds
+  SnapStartApplyOn:
+    Type: String
+    Default: None
+    AllowedValues:
+    - None
+    - PublishedVersions    
+    Description: Set to SnapStart when to enable it
 
 Resources:
 
@@ -41,6 +48,9 @@ Resources:
       Environment:
         Variables:
           DISABLE_SIGNAL_HANDLERS: !Sub ${DisableSignalHandlers}
+      SnapStart:
+        ApplyOn: !Sub ${SnapStartApplyOn}
+      AutoPublishAlias: V1          
       Events:
         GetResource:
           Type: Api
