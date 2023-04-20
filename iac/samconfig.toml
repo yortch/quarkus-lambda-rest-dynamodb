@@ -26,4 +26,4 @@ stack_name = "sam-app-snapstart"
 resolve_s3 = true
 s3_prefix = "sam-app-snapstart"
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "Runtime=\"java11\" MemorySize=\"512\" DisableSignalHandlers=\"false\" PublishAlias=\"SnapStart\""
+parameter_overrides = "Runtime=\"java11\" MemorySize=\"512\" DisableSignalHandlers=\"false\" SnapStartApplyOn=\"PublishedVersions\""
