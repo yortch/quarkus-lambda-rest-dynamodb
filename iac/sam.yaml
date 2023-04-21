@@ -20,7 +20,7 @@ Parameters:
     Description: use java11 for jvm runtime or provided for native runtime
   MemorySize:
     Type: String
-    Default: 128
+    Default: 512
     Description: Memory size in MB
   DisableSignalHandlers:
     Type: String

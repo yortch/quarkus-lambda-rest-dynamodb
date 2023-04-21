@@ -93,6 +93,29 @@ sam deploy -t iac/sam.yaml --config-env snapstart
 sam deploy -t iac/sam.yaml 
 ```
 
+## Test commands
+
+You can test by exporting the service url into a variable:
+```
+URL=<replace url>
+```
+
+Next, submit a request to insert a fruit:
+
+```
+curl --location --request POST ${URL} --header 'Content-Type: application/json' \
+--data-raw '{
+  "name": "lemon",
+  "description": "citrus fruit"
+}'
+```
+
+Finally, execute get all fruits request:
+
+```
+curl --location --request GET ${URL}
+```
+
 ## Troubleshooting native build errors
 
 * "Error: Classes that should be initialized at run time got initialized during image building"
