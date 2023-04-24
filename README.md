@@ -103,7 +103,8 @@ URL=<replace url>
 Next, submit a request to insert a fruit:
 
 ```
-curl --location --request POST ${URL} --header 'Content-Type: application/json' \
+curl -w '\nTime: %{time_total}s\n' --location --request POST ${URL} \
+--header 'Content-Type: application/json' \
 --data-raw '{
   "name": "lemon",
   "description": "citrus fruit"
@@ -113,7 +114,7 @@ curl --location --request POST ${URL} --header 'Content-Type: application/json' 
 Finally, execute get all fruits request:
 
 ```
-curl --location --request GET ${URL}
+curl -w '\nTime: %{time_total}s\n' --location --request GET ${URL}
 ```
 
 ## Troubleshooting native build errors
